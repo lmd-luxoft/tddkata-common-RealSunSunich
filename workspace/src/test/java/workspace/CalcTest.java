@@ -67,7 +67,8 @@ class CalcTest {
 	@DisplayName("Три аргумента с ошибкой текст в третьем аргументе")
 	void testSumOnePlusTwoPlusString() {
 		Calc calc = new Calc();
-		assertThrows(NumberFormatException.class, ()->calc.sum("1,2,еуые"));
+		assertEquals(-1, calc.sum("1,2,еуые"));
+//		assertThrows(NumberFormatException.class, ()->calc.sum("1,2,еуые"));
 	}
 	
 	@Test
