@@ -203,7 +203,7 @@ class CalcTest {
 	}
 	
 	@Test
-	@DisplayName("Укзан разделитель, и он же используются. Несколько аргументов ")
+	@DisplayName("Укзан разделитель из чисел, и он же используются. Несколько аргументов ")
 	void testSumWithOptDelimeterOfNumbers() {
 		Calc calc = new Calc();
 		assertEquals(29, calc.sum("//123\n-1123101231012310"));
