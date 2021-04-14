@@ -14,6 +14,11 @@ public class Calc {
 				int endOfDelimeter = expression.indexOf("\n");
 				regex=expression.substring(2, endOfDelimeter);
 				input= expression.substring(endOfDelimeter+1);
+				if(input.startsWith("\n")&&"".equals(regex)) {
+					//вырожденный случай опционального разделителя указанного как перенос строки
+					regex="\n";
+					input=expression.substring(endOfDelimeter+2);
+				}
 			}
 			
 			String[] split = input.split(regex);

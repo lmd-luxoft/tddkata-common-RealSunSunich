@@ -217,6 +217,20 @@ class CalcTest {
 	}
 	
 	@Test
+	@DisplayName("Укзан пустой разделитель. ")
+	void testSumWithOptDelimeterDefinedAsEmpty() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("//\n-11031"));
+	}
+	
+	@Test
+	@DisplayName("Укзан разделитель в виде переноса строки, и он же используются")
+	void testSumWithOptDelimeterDefinedAsNL() {
+		Calc calc = new Calc();
+		assertEquals(13, calc.sum("//\n\n-1\n10\n3\n1"));
+	}
+	
+	@Test
 	@DisplayName("Неверно Указан разделитель")
 	void testSumWithErrorOnOptDelimeter() {
 		Calc calc = new Calc();
