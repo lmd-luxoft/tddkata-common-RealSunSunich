@@ -8,11 +8,11 @@ public class Calc {
 	public long sum(String expression) {
 		Long result = 0L;
 		try {
-			String[] split = expression.split(",");
+			String[] split = expression.split("[,\n]");
 			if (split.length < 2)
 				return -1;
 			for (String string : split) {
-				result += Long.valueOf(string);
+				result += Long.valueOf(string.trim());
 			}
 		} catch (Exception e) {
 

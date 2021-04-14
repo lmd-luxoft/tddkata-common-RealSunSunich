@@ -8,11 +8,6 @@ import org.junit.jupiter.api.Test;
 class CalcTest {
 
 	@Test
-	void testAdd() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	void testSumOnePlusTwo() {
 		Calc calc = new Calc();
 		assertEquals(3, calc.sum("1,2"));
@@ -22,6 +17,33 @@ class CalcTest {
 	void testSumNull() {
 		Calc calc = new Calc();
 		assertEquals(-1, calc.sum(null));
+	}
+	
+	@Test
+	@DisplayName("сложение больше 4 аргументов")
+	void testSumFourArgs() {
+		Calc calc = new Calc();
+		assertEquals(7, calc.sum("1,1,2,3,0,0"));
+	}
+	
+	@Test
+	@DisplayName("сложение больше 4 аргументов с переносом строки")
+	void testSumMoreArgsWithNewLine() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("1,1,2,3,0,0,\n4"));
+	}
+	@Test
+	@DisplayName("сложение больше 4 аргументов с переносом без разделителя")
+	void testSumMoreArgsWithNewLineAndNoDelimeter() {
+		Calc calc = new Calc();
+		assertEquals(11, calc.sum("1,1,2,3,0,0\n4"));
+	}
+	
+	@Test
+	@DisplayName("Ошибка сложения, аргумент пустой")
+	void testSumEmptyArgs() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("1,1,2,,0,0"));
 	}
 	
 	@Test
