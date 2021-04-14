@@ -40,6 +40,27 @@ class CalcTest {
 	}
 	
 	@Test
+	@DisplayName("сложение больше 4 аргументов с несколькими переносами")
+	void testSumMoreArgsWithManyNewLines() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("1,1,2,3,0,0\n\n4"));
+	}
+	
+	@Test
+	@DisplayName("сложение больше 4 аргументов с переносом без разделителя")
+	void testSumWithNewLineAndOneArgs() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("\n4"));
+	}
+	
+	@Test
+	@DisplayName("сложение с переносом в начале аргумента")
+	void testSumWithNewLineAtStart() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("\n4\n2"));
+	}
+	
+	@Test
 	@DisplayName("Ошибка сложения, аргумент пустой")
 	void testSumEmptyArgs() {
 		Calc calc = new Calc();
