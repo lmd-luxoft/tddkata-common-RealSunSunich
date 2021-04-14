@@ -180,4 +180,54 @@ class CalcTest {
 		assertEquals(-1,calc.sum("-1,a"));
 //		assertThrows(ArithmeticException.class,()->{ calc.sum("-1,a");});
 	}
+	
+	@Test
+	@DisplayName("Указан разделитель, но используются стандартные.")
+	void testSumWithOptDelimeterOnlyStandartUsed() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("//newDelimeter\n-1,10"));
+	}
+	
+	@Test
+	@DisplayName("Укзан разделитель, и он же используются . ")
+	void testSumWithOptDelimeterUsed() {
+		Calc calc = new Calc();
+		assertEquals(9, calc.sum("//newDelimeter\n-1newDelimeter10"));
+	}
+	
+	@Test
+	@DisplayName("Укзан разделитель, и он же используются. Несколько аргументов ")
+	void testSumWithOptDelimeterUsedMultipleTimes() {
+		Calc calc = new Calc();
+		assertEquals(29, calc.sum("//newDelimeter\n-1newDelimeter10newDelimeter10newDelimeter10"));
+	}
+	
+	@Test
+	@DisplayName("Укзан разделитель, и он же используются. Несколько аргументов ")
+	void testSumWithOptDelimeterOfNumbers() {
+		Calc calc = new Calc();
+		assertEquals(29, calc.sum("//123\n-1123101231012310"));
+	}
+	
+	@Test
+	@DisplayName("Укзан разделитель, и он же используются вместе со стандартными. ")
+	void testSumWithOptDelimeterAndStandartUsed() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("//newDelimeter\n-1newDelimeter10,3\n1"));
+	}
+	
+	@Test
+	@DisplayName("Неверно Указан разделитель")
+	void testSumWithErrorOnOptDelimeter() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("/newDelimeter\n-1,10"));
+	}
+	
+	@Test
+	@DisplayName("Неверно Указан разделитель, нет завершения")
+	void testSumWithErrorOnOptDelimeterNoEnd() {
+		Calc calc = new Calc();
+		assertEquals(-1, calc.sum("//newDelimeter-1,10\n2\n3"));
+	}
+	
 }
