@@ -4,244 +4,72 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class CalcTest {
-
-	@Test
-	void testSumOnePlusTwo() {
+	
+	@ParameterizedTest
+	@DisplayName("Тестируем выброс Exception на негативные аргументы, параметризированный тест через csv")
+	@CsvSource({"negatives not allowed -1, '//newDelimeter\n-1newDelimeter10,3\n1'",
+		"negatives not allowed -1, '//\n\n-1\n10\n3\n1'",
+		"'negatives not allowed -1,-0', '-1,-0'"
+		,"'negatives not allowed -0', '1,-0'"
+		,"'negatives not allowed -1', '-1,2147483647'"
+		,"'negatives not allowed -1,-2147483647', '-1,-2147483647'"
+		,"'negatives not allowed -1', '-1,a'"
+		
+	})
+	void testSumByArgsThrowsExceptionsOnNegative(String expectedMessage, String input) {
 		Calc calc = new Calc();
-		assertEquals(3, calc.sum("1,2"));
+		ArithmeticException exception = assertThrows(ArithmeticException.class, ()->calc.sum(input));
+		assertEquals(expectedMessage, exception.getMessage());
 	}
 	
-	@Test
-	void testSumNull() {
+	
+	@ParameterizedTest(name = "''{0}''")
+	@DisplayName("Позитивные тесты суммы аргументов, параметризированный через csv - имя, результат, выражение")
+	@CsvSource({"Сумма двух аргументов, 3, '1,2'",
+		"сложение больше 4 аргументов, 7, '1,1,2,3,0,0'",
+		"'сложение больше 4 аргументов с переносом без разделителя', 11, '1,1,2,3,0,0\n4'",
+		"'Переполнение int, три аргумента',2147483649,'2147483647,2,0'"
+		,"'Сложение нулей',0,'0,0'"
+		,"'Сложение с опциональным разделителем \n',13, '//\n\n-1\n10\n3\n1'"
+		,"'Сложение с опциональным разделителем newDelimeter',40, '//newDelimeter\n10newDelimeter10newDelimeter10newDelimeter10'"
+		,"'Указан разделитель из чисел, и он же используются. Несколько аргументов',29, '//123\n-1123101231012310'"
+	})
+	void positiveSumTests(String displayMessage, long expectedResult, String input) {
 		Calc calc = new Calc();
-		assertEquals(-1, calc.sum(null));
+		assertEquals(expectedResult, calc.sum(input));
 	}
 	
-	@Test
-	@DisplayName("сложение больше 4 аргументов")
-	void testSumFourArgs() {
+	@ParameterizedTest(name = "''{0}''")
+	@DisplayName("Негативные тесты суммы аргументов, параметризированный через csv - имя, результат, выражение")
+	@CsvSource({"сложение больше 4 аргументов с переносом строки, 3, '1,1,2,3,0,0,\n4'",
+		"Передан null, 7,",
+		"сложение больше 4 аргументов с несколькими переносами,2147483649,'1,1,2,3,0,0\n\n4'"
+		,"сложение больше 4 аргументов с переносом без разделителя,0,'\n4'"
+		,"сложение с переносом в начале аргумента,13, '\n4\n2'"
+		,"'Ошибка сложения, аргумент пустой',40, '1,1,2,,0,0'"
+		,"сложение одного пустого аргумента,29, ''"
+		,"сложение одного аргумента,29, '1'"
+		,"сложение с рациональным,29, '0,0.1'"
+		,"Три аргумента с ошибкой текст в третьем аргументе,29, '1,2,еуые'"
+		,"Три аргумента с ошибкой разделителя,29, '0,0ж3'"
+		,"Сложение строк,29, 'test,test'"
+		,"Сложение строк и числа,29, 'str,2147483647'"
+		,"'Указан разделитель, но используются стандартные.',29, '//newDelimeter\n1,10'"
+		,"'Указан пустой разделитель.',29, '//\n-11031'"
+		,"'Неверно Указан разделитель',29, '/newDelimeter\n1,10'"
+		,"'Неверно Указан разделитель, нет завершения',29, '//newDelimeter-1,10\n2\n3'"
+		,"'Неверно Указан разделитель, нет завершения 2',29, '//'"
+		,"'Неверно Указан разделитель, два слеша',29, '//\\n\n-1\n10\n3\\n1'"
+		,"'Неверно Указан разделитель, три слеша',29, '//\n\\\n-1\\\n10\\\n3\\\n1'"
+	})
+	void negativeSumTests(String displayMessage, long expectedResult, String input) {
 		Calc calc = new Calc();
-		assertEquals(7, calc.sum("1,1,2,3,0,0"));
+		assertEquals(-1, calc.sum(input));
 	}
 	
-	@Test
-	@DisplayName("сложение больше 4 аргументов с переносом строки")
-	void testSumMoreArgsWithNewLine() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("1,1,2,3,0,0,\n4"));
-	}
-	@Test
-	@DisplayName("сложение больше 4 аргументов с переносом без разделителя")
-	void testSumMoreArgsWithNewLineAndNoDelimeter() {
-		Calc calc = new Calc();
-		assertEquals(11, calc.sum("1,1,2,3,0,0\n4"));
-	}
-	
-	@Test
-	@DisplayName("сложение больше 4 аргументов с несколькими переносами")
-	void testSumMoreArgsWithManyNewLines() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("1,1,2,3,0,0\n\n4"));
-	}
-	
-	@Test
-	@DisplayName("сложение больше 4 аргументов с переносом без разделителя")
-	void testSumWithNewLineAndOneArgs() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("\n4"));
-	}
-	
-	@Test
-	@DisplayName("сложение с переносом в начале аргумента")
-	void testSumWithNewLineAtStart() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("\n4\n2"));
-	}
-	
-	@Test
-	@DisplayName("Ошибка сложения, аргумент пустой")
-	void testSumEmptyArgs() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("1,1,2,,0,0"));
-	}
-	
-	@Test
-	@DisplayName("сложение одного пустого аргумента")
-	void testSumEmpty() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum(""));
-	}
-	
-	@Test
-	@DisplayName("сложение одного аргумента")
-	void testSumOne() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("1"));
-	}
-	
-	@Test
-	@DisplayName("сложение с рациональным")
-	void testSumRational() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("0,0.1"));
-	}
-	
-	@Test
-	void testSumIntMaxPlusTwo() {
-		Calc calc = new Calc();
-		assertEquals(2147483649L, calc.sum("2147483647,2"));
-	}
-	
-	@Test
-	void testSumZeroPlusZero() {
-		Calc calc = new Calc();
-		assertEquals(0, calc.sum("0,0"));
-	}
-	
-	@Test
-	void testSumMinusOnePlusZero() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("-1,0"));
-	}
-	
-	@Test
-	@DisplayName("Три аргумента с ошибкой текст в третьем аргументе")
-	void testSumOnePlusTwoPlusString() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("1,2,еуые"));
-//		assertThrows(NumberFormatException.class, ()->calc.sum("1,2,еуые"));
-	}
-	
-	@Test
-	@DisplayName("Три аргумента с переполнением инт")
-	void testSumIntMaxPlusTwoPlusZero() {
-		Calc calc = new Calc();
-		assertEquals(2147483649L, calc.sum("2147483647,2,0"));
-	}
-	
-	@Test
-	@DisplayName("Три аргумента с ошибкой разделителя")
-	void testSumZeroPlusZeroPlusThree() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("0,0ж3"));
-//		assertThrows(NumberFormatException.class, ()->calc.sum("0,0ж3"));
-	}
-	
-	@Test
-	@DisplayName("Три аргумента с негативным слагаемым")
-	void testSumMinusOnePlusZeroPlusTwo() {
-		Calc calc = new Calc();
-		assertEquals(1, calc.sum("-1,0,2"));
-	}
-	
-	@Test
-	void testSumMinusOnePlusMinusZero() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("-1,-0"));
-	}
-	
-	@Test
-	void testSumMinusOnePlusPositive10() {
-		Calc calc = new Calc();
-		assertEquals(9, calc.sum("-1,10"));
-	}
-	
-	@Test
-	void testSumMinusOnePlusPositiveIntMax() {
-		Calc calc = new Calc();
-		assertEquals(2147483646, calc.sum("-1,2147483647"));
-	}
-	
-	@Test
-	void testSumMinusOnePlusMinusIntMax() {
-		Calc calc = new Calc();
-		assertEquals(-2147483648, calc.sum("-1,-2147483647"));
-	}
-	
-	@Test
-	void testSumStringPlusString() {
-		Calc calc = new Calc();
-//		assertThrows(ArithmeticException.class,()->{ calc.sum("test,test");});
-		assertEquals(-1, calc.sum("test,test"));
-	}
-	
-	@Test
-	void testSumStringPlusMaxInt() {
-		Calc calc = new Calc();
-//		assertThrows(ArithmeticException.class,()->{ calc.sum("str,2147483647");});
-		assertEquals(-1,calc.sum("str,2147483647"));
-	}
-	
-	@Test
-	void testSumMaxIntPlusChar() {
-		Calc calc = new Calc();
-		assertEquals(-1,calc.sum("-1,a"));
-//		assertThrows(ArithmeticException.class,()->{ calc.sum("-1,a");});
-	}
-	
-	@Test
-	@DisplayName("Указан разделитель, но используются стандартные.")
-	void testSumWithOptDelimeterOnlyStandartUsed() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("//newDelimeter\n-1,10"));
-	}
-	
-	@Test
-	@DisplayName("Укзан разделитель, и он же используются . ")
-	void testSumWithOptDelimeterUsed() {
-		Calc calc = new Calc();
-		assertEquals(9, calc.sum("//newDelimeter\n-1newDelimeter10"));
-	}
-	
-	@Test
-	@DisplayName("Укзан разделитель, и он же используются. Несколько аргументов ")
-	void testSumWithOptDelimeterUsedMultipleTimes() {
-		Calc calc = new Calc();
-		assertEquals(29, calc.sum("//newDelimeter\n-1newDelimeter10newDelimeter10newDelimeter10"));
-	}
-	
-	@Test
-	@DisplayName("Укзан разделитель из чисел, и он же используются. Несколько аргументов ")
-	void testSumWithOptDelimeterOfNumbers() {
-		Calc calc = new Calc();
-		assertEquals(29, calc.sum("//123\n-1123101231012310"));
-	}
-	
-	@Test
-	@DisplayName("Укзан разделитель, и он же используются вместе со стандартными. ")
-	void testSumWithOptDelimeterAndStandartUsed() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("//newDelimeter\n-1newDelimeter10,3\n1"));
-	}
-	
-	@Test
-	@DisplayName("Укзан пустой разделитель. ")
-	void testSumWithOptDelimeterDefinedAsEmpty() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("//\n-11031"));
-	}
-	
-	@Test
-	@DisplayName("Укзан разделитель в виде переноса строки, и он же используются")
-	void testSumWithOptDelimeterDefinedAsNL() {
-		Calc calc = new Calc();
-		assertEquals(13, calc.sum("//\n\n-1\n10\n3\n1"));
-	}
-	
-	@Test
-	@DisplayName("Неверно Указан разделитель")
-	void testSumWithErrorOnOptDelimeter() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("/newDelimeter\n-1,10"));
-	}
-	
-	@Test
-	@DisplayName("Неверно Указан разделитель, нет завершения")
-	void testSumWithErrorOnOptDelimeterNoEnd() {
-		Calc calc = new Calc();
-		assertEquals(-1, calc.sum("//newDelimeter-1,10\n2\n3"));
-	}
 	
 }
