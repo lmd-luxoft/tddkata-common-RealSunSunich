@@ -1,11 +1,10 @@
 package workspace;
 
 public class Calc {
- public int add() {
-	 return 0;
- }
 
 	public long sum(String expression) {
+		if(expression==null) return -1;
+		
 		Long result = 0L;
 		String regex = "[,\n]";
 		try {
@@ -27,7 +26,7 @@ public class Calc {
 			for (String string : split) {
 				result += Long.valueOf(string.trim());
 			}
-		} catch (Exception e) {
+		} catch (NumberFormatException | StringIndexOutOfBoundsException e) {
 
 			return -1;
 		}
